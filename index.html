@@ -3,9 +3,32 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Document</title>
+        <title>Wordly Dictionary</title>
+        <link rel="stylesheet" href="style.css">
     </head>
     <body>
+        <h1>Wordly Dictionary</h1>
 
+        <form id="search-form">
+            <input type="text" id="search-input" placeholder="Enter a word..." required>
+            <button type="submit" id="search-button">Search</button>
+        </form>
+
+        <section id="results" aria-labelledby="results-heading">
+            <h2 id="results-heading" class="visually-hidden">Search Results</h2>
+            <div id="word-info"></div>
+            <h3 id="word-title">Word title</h3>
+            <p id="definition">Definition will appear here.</p>
+
+            <audio id="audio-player" controls>
+                Your browser does not support the audio element.
+            </audio>
+            </div>
+        </section>
+
+
+
+
+        <script src="index.js"></script>
     </body>
 </html>
