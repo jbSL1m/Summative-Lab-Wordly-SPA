@@ -14,6 +14,7 @@ searchForm.addEventListener('submit', (e) => {
   }
 });
 
+
 async function fetchWordData(word) {
   try {
     const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);//fetch data from API
@@ -22,6 +23,7 @@ async function fetchWordData(word) {
     }
     const data = await response.json(); // parse the response as JSON
     displayWordData(data[0]); // display the first entry of the data
+    searchInput.value = ''; // clear the input field after successful search
   }
   catch (error) {
     wordInfoDiv.innerHTML = `<p>Error: ${error.message}</p>`;
@@ -30,15 +32,20 @@ async function fetchWordData(word) {
 
 const displayWordData = (wordData) => {
   const word = wordData.word;
+  const phonetic = wordData.phonetic; // get phonetic text
   const phonetics = wordData.phonetics;
   const meanings = wordData.meanings;
 
-  wordTitle.textContent = word; // set the word title
+  // Display word title with phonetic text
+  wordTitle.textContent = word;
+  if (phonetic) {
+    wordTitle.textContent += ` (${phonetic})`; // add phonetic pronunciation
+  }
 
   let audioUrl = '';
-  phonetics.forEach(phonetic => {
-    if (!audioUrl && phonetic.audio) {
-      audioUrl = phonetic.audio; // get the first available audio URL
+  phonetics.forEach(phoneticObj => {
+    if (!audioUrl && phoneticObj.audio) {
+      audioUrl = phoneticObj.audio; // get the first available audio URL
     }
   });
 
@@ -46,7 +53,7 @@ const displayWordData = (wordData) => {
     audioPlayer.src = audioUrl; // set the audio source
   }
 
-  let definitionsHtml = ''; // initialize definitions HTML and reset the definition paragraph
+  let definitionsHtml = ''; // initialize definitions HTML
 
   meanings.forEach(meaning => {
     definitionsHtml += `<p><strong>${meaning.partOfSpeech}:</strong></p>`;
@@ -57,7 +64,12 @@ const displayWordData = (wordData) => {
     });
 
     definitionsHtml += "</ul>";
+    
+    // Display synonyms if available
+    if (meaning.synonyms && meaning.synonyms.length > 0) {
+      definitionsHtml += `<p><strong>Synonyms:</strong> ${meaning.synonyms.slice(0, 5).join(', ')}</p>`;
+    }
   });
 
-  definitionParagraph.innerHTML = definitionsHtml; // set the definition paragraph HTML OUTSIDE the loop
+  definitionParagraph.innerHTML = definitionsHtml; // set the definition paragraph HTML
 };
