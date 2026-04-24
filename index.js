@@ -4,6 +4,7 @@ const searchForm = document.getElementById('search-form');
 const wordInfoDiv = document.getElementById('word-info');
 const wordTitle = document.getElementById('word-title');
 const definitionParagraph = document.getElementById('definition');
+const examplesParagraph = document.getElementById('examples');
 const audioPlayer = document.getElementById('audio-player');
 
 searchForm.addEventListener('submit', (e) => {
@@ -39,7 +40,7 @@ const displayWordData = (wordData) => {
   // Display word title with phonetic text
   wordTitle.textContent = word;
   if (phonetic) {
-    wordTitle.textContent += ` (${phonetic})`; // add phonetic pronunciation
+    wordTitle.textContent += ` (${phonetic})`;
   }
 
   let audioUrl = '';
@@ -54,6 +55,9 @@ const displayWordData = (wordData) => {
   }
 
   definitionParagraph.innerHTML = ''; // clear previous definitions
+  examplesParagraph.innerHTML = ''; // clear previous examples
+
+  let exampleCount = 0;
 
   meanings.forEach(meaning => {
     const partOfSpeechPara = document.createElement('p');
@@ -66,7 +70,23 @@ const displayWordData = (wordData) => {
     meaning.definitions.slice(0, 3).forEach(def => {
       const listItem = document.createElement('li');
       listItem.textContent = def.definition; // add each definition to the list
-      definitionsList.appendChild(listItem);// manipulate the DOM to display the definitions
+      definitionsList.appendChild(listItem); // manipulate the DOM to display the definitions
+
+      if (def.example) {
+        if (exampleCount === 0) {
+          const examplesLabel = document.createElement('strong');
+          examplesLabel.textContent = 'Example Sentences:';
+          examplesParagraph.appendChild(examplesLabel);
+          examplesParagraph.appendChild(document.createElement('br'));
+        }
+
+        const exampleText = document.createElement('span');
+        exampleText.className = 'example-sentence';
+        exampleText.textContent = def.example;
+        examplesParagraph.appendChild(exampleText);
+        examplesParagraph.appendChild(document.createElement('br'));
+        exampleCount += 1;
+      }
     });
     definitionParagraph.appendChild(definitionsList);
 
@@ -80,4 +100,8 @@ const displayWordData = (wordData) => {
       definitionParagraph.appendChild(synonymsPara);
     }
   });
+
+  if (exampleCount === 0) {
+    examplesParagraph.textContent = 'No example sentences available.';
+  }
 };
