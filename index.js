@@ -32,7 +32,7 @@ async function fetchWordData(word) {
 
 const displayWordData = (wordData) => {
   const word = wordData.word;
-  const phonetic = wordData.phonetic; // get phonetic text
+  const phonetic = wordData.phonetic; // get the phonetic text if available
   const phonetics = wordData.phonetics;
   const meanings = wordData.meanings;
 
@@ -53,23 +53,31 @@ const displayWordData = (wordData) => {
     audioPlayer.src = audioUrl; // set the audio source
   }
 
-  let definitionsHtml = ''; // initialize definitions HTML
+  definitionParagraph.innerHTML = ''; // clear previous definitions
 
   meanings.forEach(meaning => {
-    definitionsHtml += `<p><strong>${meaning.partOfSpeech}:</strong></p>`;
-    definitionsHtml += "<ul>";
+    const partOfSpeechPara = document.createElement('p');
+    const partOfSpeechStrong = document.createElement('strong');
+    partOfSpeechStrong.textContent = `${meaning.partOfSpeech}:`;
+    partOfSpeechPara.appendChild(partOfSpeechStrong);
+    definitionParagraph.appendChild(partOfSpeechPara);
 
+    const definitionsList = document.createElement('ul');
     meaning.definitions.slice(0, 3).forEach(def => {
-      definitionsHtml += `<li>${def.definition}</li>`; // add each definition to the list
+      const listItem = document.createElement('li');
+      listItem.textContent = def.definition; // add each definition to the list
+      definitionsList.appendChild(listItem);// manipulate the DOM to display the definitions
     });
+    definitionParagraph.appendChild(definitionsList);
 
-    definitionsHtml += "</ul>";
-    
     // Display synonyms if available
     if (meaning.synonyms && meaning.synonyms.length > 0) {
-      definitionsHtml += `<p><strong>Synonyms:</strong> ${meaning.synonyms.slice(0, 5).join(', ')}</p>`;
+      const synonymsPara = document.createElement('p');
+      const synonymsStrong = document.createElement('strong');
+      synonymsStrong.textContent = 'Synonyms:';
+      synonymsPara.appendChild(synonymsStrong);
+      synonymsPara.append(` ${meaning.synonyms.slice(0, 5).join(', ')}`);
+      definitionParagraph.appendChild(synonymsPara);
     }
   });
-
-  definitionParagraph.innerHTML = definitionsHtml; // set the definition paragraph HTML
 };
