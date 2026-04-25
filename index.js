@@ -7,12 +7,26 @@ const definitionParagraph = document.getElementById('definition');
 const examplesParagraph = document.getElementById('examples');
 const audioPlayer = document.getElementById('audio-player');
 
+const clearPreviousData = () => {
+  wordTitle.textContent = '';
+  definitionParagraph.innerHTML = '';
+  examplesParagraph.innerHTML = '';
+  audioPlayer.src = '';
+};
 searchForm.addEventListener('submit', (e) => {
   e.preventDefault(); // prevent page refresh
   const word = searchInput.value.trim();
-  if (word) {
-    fetchWordData(word);
+  if (!word) { // if input is empty, display a message and return
+    wordInfoDiv.innerHTML = '<p>Please enter a word to search.</p>';
+    return;
   }
+  if (!isNaN(word)) { // if input is a number, display a message and return
+    wordInfoDiv.innerHTML = '<p>Please enter a word, not a number.</p>';
+    return;
+  }
+
+  clearPreviousData(); // clear previous data before fetching new data 
+  fetchWordData(word); // call the function to fetch word data
 });
 
 
@@ -23,6 +37,7 @@ async function fetchWordData(word) {
       throw new Error('Word not found');
     }
     const data = await response.json(); // parse the response as JSON
+    wordInfoDiv.innerHTML = ''; // clear any previous error message
     displayWordData(data[0]); // display the first entry of the data
     searchInput.value = ''; // clear the input field after successful search
   }
@@ -105,3 +120,4 @@ const displayWordData = (wordData) => {
     examplesParagraph.textContent = 'No example sentences available.';
   }
 };
+
